@@ -3,6 +3,7 @@ import java.util.*;
 public class NavigableSet<T extends Comparable<T>> extends AbstractSet<T> implements java.util.NavigableSet<T> {
     protected Comparator<T> comparator;
     protected List<T> list;
+    protected boolean desc;
 
     NavigableSet(){
         list=new ArrayList<>();
@@ -181,13 +182,12 @@ public class NavigableSet<T extends Comparable<T>> extends AbstractSet<T> implem
     public java.util.NavigableSet<T> descendingSet() {
         NavigableSet<T> ns;
         if(comparator!= null) {
-            ns=new NavigableSet<>(comparator);
+            ns=new NavigableSet<>(list,comparator);
         }
         else {
-            ns = new NavigableSet<T>();
+            ns = new NavigableSet<T>(list);
         }
-        Iterator<T> t=descendingIterator();
-        while(t.hasNext())ns.list.add(t.next());
+        ns.desc=true;
         return ns;
     }
     /**
@@ -198,7 +198,6 @@ public class NavigableSet<T extends Comparable<T>> extends AbstractSet<T> implem
      * @param b2
      * @return
      */
-
 
     @Override
     public java.util.NavigableSet<T> subSet(T e1, boolean b1, T e2, boolean b2) {
@@ -359,8 +358,10 @@ public class NavigableSet<T extends Comparable<T>> extends AbstractSet<T> implem
      */
 
     private int compare(T o1, T o2){
-        if(comparator==null) return  o1.compareTo(o2);
-        return comparator.compare(o1,o2);
+        int a=1;
+        if(desc)a=-1;
+        if(comparator==null) return  a*o1.compareTo(o2);
+        return a*comparator.compare(o1,o2);
     }
     /**
      * Compares elements of set
